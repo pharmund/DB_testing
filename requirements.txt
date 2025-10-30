@@ -1,8 +1,4 @@
-# PostgreSQL adapter for Python
-psycopg2-binary
-
-# Testing framework
 pytest==7.4.3
-
-# HTML reports for pytest
-pytest-html==4.1.1
+sqlalchemy==2.0.0
+psycopg2-binary==2.9.7
+python-dotenv==1.0.0
