@@ -1,35 +1,47 @@
+#!/usr/bin/env python3
 import pytest
-import subprocess
+import logging
 import sys
+import os
 from datetime import datetime
 
 
-def run_tests():
-    """Запуск всех тестов с генерацией отчета"""
-    print("=== Запуск автотестов системы синхронизации ===")
-    print(f"Время запуска: {datetime.now()}")
+def setup_logging():
+    """Настройка логирования"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler(f'test_results_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log', encoding='utf-8')
+        ]
+    )
 
-    # Параметры pytest
+
+def main():
+    """Основная функция запуска тестов"""
+    setup_logging()
+    logger = logging.getLogger(__name__)
+
+    logger.info("ЗАПУСК ТЕСТОВ СИНХРОНИЗАЦИИ БАЗ ДАННЫХ")
+
+    # Запуск pytest
     pytest_args = [
-        "test_sync_scenarios.py",
-        "-v",  # Подробный вывод
-        "--html=test_report.html",  # HTML отчет
-        "--self-contained-html",
-        "--capture=sys"  # Для вывода print
+        'test_synchronization.py',
+        '-v',
+        '--tb=short',
+        '--color=yes'
     ]
 
-    # Запуск тестов
     exit_code = pytest.main(pytest_args)
 
     if exit_code == 0:
-        print("\n✅ Все тесты прошли успешно!")
+        logger.info("ВСЕ ТЕСТЫ УСПЕШНО ПРОЙДЕНЫ!")
     else:
-        print(f"\n❌ Часть тестов не прошла. Код выхода: {exit_code}")
+        logger.error(f"НЕКОТОРЫЕ ТЕСТЫ НЕ ПРОЙДЕНЫ. Код выхода: {exit_code}")
 
-    print(f"\nОтчет сохранен в: test_report.html")
     return exit_code
 
 
-if __name__ == "__main__":
-    result = run_tests()
-    sys.exit(result)
+if __name__ == '__main__':
+    sys.exit(main())

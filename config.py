@@ -1,44 +1,41 @@
-import psycopg2
-from dataclasses import dataclass
+import os
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+import urllib.parse
+
+load_dotenv()
 
 
-@dataclass
-class DBConfig:
-    host: str = "localhost"
-    port: int = 5432
-    user: str = "postgres"
-    password: str = "your_password"
+class Config:
+    # Данные подключения к базам
+    DB_FILIAL1 = {
+        'host': os.getenv('DB_HOST', 'localhost'),
+        'port': os.getenv('DB_PORT', '5432'),
+        'database': 'filial1',
+        'user': os.getenv('DB_USER', 'postgres'),
+        'password': os.getenv('DB_PASSWORD', 'password')
+    }
 
-    db_filial1: str = "filial1"
-    db_filial2: str = "filial2"
+    DB_FILIAL2 = {
+        'host': os.getenv('DB_HOST', 'localhost'),
+        'port': os.getenv('DB_PORT', '5432'),
+        'database': 'filial2',
+        'user': os.getenv('DB_USER', 'postgres'),
+        'password': os.getenv('DB_PASSWORD', 'password')
+    }
 
-
-class DatabaseManager:
-    def __init__(self, config: DBConfig):
-        self.config = config
-
-    def get_connection(self, database: str):
-        return psycopg2.connect(
-            host=self.config.host,
-            port=self.config.port,
-            user=self.config.user,
-            password=self.config.password,
-            database=database
-        )
-
-    def execute_query(self, database: str, query: str, params=None, fetch=False):
-        conn = self.get_connection(database)
-        try:
-            with conn.cursor() as cursor:
-                cursor.execute(query, params)
-                if fetch:
-                    return cursor.fetchall()
-                conn.commit()
-                return cursor.rowcount
-        finally:
-            conn.close()
+    # Генерация URL для SQLAlchemy
+    @classmethod
+    def get_db_url(cls, db_config):
+        # Экранируем специальные символы в пароле
+        password = urllib.parse.quote_plus(db_config['password'])
+        return f"postgresql://{db_config['user']}:{password}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
 
 
-# Конфигурация
-config = DBConfig()
-db_manager = DatabaseManager(config)
+class TestConfig:
+    # Тестовые данные
+    TEST_EMPLOYEE_BASE_CODE = 6000  # Начальный код для тестовых сотрудников
+
+    @classmethod
+    def get_test_passport(cls, test_number):
+        return f'600{test_number}600{test_number}0'
