@@ -333,26 +333,26 @@ DB_PASSWORD=your_password
 
 bash
 
-# Принудительная очистка баз данных от тестовых данных
+### Принудительная очистка баз данных от тестовых данных
 python cleanup_databases.py
 
-# Диагностика состояния баз данных
+### Диагностика состояния баз данных
 python debug_database.py
 
-# Запуск всех тестов
+### Запуск всех тестов
 python run_tests.py
 
 **Альтернативные способы запуска:**
 
 bash
 
-# Запуск через pytest с детализацией
+### Запуск через pytest с детализацией
 pytest test_synchronization.py -v
 
-# Запуск с генерацией отчета
+### Запуск с генерацией отчета
 pytest test_synchronization.py --html=report.html
 
-# Запуск конкретного теста
+### Запуск конкретного теста
 pytest test_synchronization.py::TestSynchronization::test_1_new_employee_sync -v
 
 ---
